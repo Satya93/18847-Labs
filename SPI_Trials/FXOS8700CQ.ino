@@ -30,6 +30,7 @@ uint8_t FXOS8700CQ::readReg(uint8_t reg) {
     uint8_t rx_data;
 
     // TO DO:
+    rx_data = spi_read_cmd(reg);
     
     return(rx_data);
 }
