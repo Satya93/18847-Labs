@@ -16,14 +16,15 @@ void setup() {
   sensor = FXOS8700CQ();
   sensor.init();
   
-  value = sensor.readReg(FXOS8700CQ_WHO_AM_I);
+  //value = sensor.readReg(FXOS8700CQ_WHO_AM_I);
 
   // TODO: Check the sensor's WhoAmI value
 
 }
 
 void loop() {
-  SerialUSB.println(value);
+  //SerialUSB.println(value);
+  sensor.checkWhoAmI();
   delay(2000);
   // TO DO: Read Mag data. Get all parameters 
   

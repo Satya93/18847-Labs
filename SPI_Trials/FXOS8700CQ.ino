@@ -72,7 +72,16 @@ void FXOS8700CQ::init() {
 // checkWhoAmI(): Check the whoAmI register
 //------------------------------------------------------------------------------
 void FXOS8700CQ::checkWhoAmI(void) {
-    // TO DO:
+    //Compare Values
+    if(FXOS8700CQ_WHOAMI_VAL != spi_read_cmd(FXOS8700CQ_WHO_AM_I))
+    {
+      SerialUSB.println("Device Authentication Failed");
+      while(1);
+    }
+    else
+    {
+      SerialUSB.println("Device Authentication Passed");
+    }
 }
 
 //*****************************************************************************
