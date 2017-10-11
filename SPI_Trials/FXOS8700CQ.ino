@@ -21,6 +21,7 @@ FXOS8700CQ::FXOS8700CQ() {
 //------------------------------------------------------------------------------
 void FXOS8700CQ::writeReg(uint8_t reg, uint8_t data) {
      // TO DO: 
+     spi_write_cmd(reg,data);
 }
 
 //------------------------------------------------------------------------------
@@ -28,8 +29,7 @@ void FXOS8700CQ::writeReg(uint8_t reg, uint8_t data) {
 //------------------------------------------------------------------------------
 uint8_t FXOS8700CQ::readReg(uint8_t reg) {
     uint8_t rx_data;
-
-    // TO DO:
+    
     rx_data = spi_read_cmd(reg);
     
     return(rx_data);
@@ -39,21 +39,52 @@ uint8_t FXOS8700CQ::readReg(uint8_t reg) {
 // readMagData(): Read the magnometer X, Y and Z axisdata
 //------------------------------------------------------------------------------
 void FXOS8700CQ::readMagData() {
-    // TO DO
+    uint8_t mag_l;
+    uint8_t mag_h;
+    uint16_t mag_val;
+    
+    mag_l = spi_read_cmd(FXOS8700CQ_M_OUT_X_LSB);
+    mag_h = spi_read_cmd(FXOS8700CQ_M_OUT_X_MSB);
+    mag_val = mag_l|(mag_h<<8);
+    SerialUSB.print("X : ");
+    SerialUSB.println(mag_val);
+
+    mag_l = spi_read_cmd(FXOS8700CQ_M_OUT_Y_LSB);
+    mag_h = spi_read_cmd(FXOS8700CQ_M_OUT_Y_MSB);
+    mag_val = mag_l|(mag_h<<8);
+    SerialUSB.print("Y : ");
+    SerialUSB.println(mag_val);
+
+    mag_l = spi_read_cmd(FXOS8700CQ_M_OUT_Z_LSB);
+    mag_h = spi_read_cmd(FXOS8700CQ_M_OUT_Z_MSB);
+    mag_val = mag_l|(mag_h<<8);
+    SerialUSB.print("Z is : ");
+    SerialUSB.println(mag_val);
+
+    mag_l = spi_read_cmd(FXOS8700CQ_M_DR_STATUS);
+    SerialUSB.println(mag_l);
+    SerialUSB.println(" ");
+       
 }
 
 //------------------------------------------------------------------------------
 // standby(): Put the FXOS8700CQ into standby mode for writing to registers
 //------------------------------------------------------------------------------
 void FXOS8700CQ::standby() {
-    // TO DO:
+   //Chip select high and initialize transaction
+
+   spi_write_cmd(FXOS8700CQ_CTRL_REG1,0x18);
+   //Chip select disable and end transaction
+
 }
 
 //------------------------------------------------------------------------------
 // active(): Put the FXOS8700CQ into active mode to output data
 //------------------------------------------------------------------------------
 void FXOS8700CQ::active() {
-    // TO DO:
+   //Chip select high and initialize transaction
+   spi_write_cmd(FXOS8700CQ_CTRL_REG1,0x19);
+   //Chip select disable and end transaction
 }
 
 //------------------------------------------------------------------------------
@@ -64,7 +95,16 @@ void FXOS8700CQ::active() {
 //         it back in active mode
 //------------------------------------------------------------------------------
 void FXOS8700CQ::init() {
-    // TO DO:
+   SerialUSB.println("Init Function : ");
+   spi_write_cmd(FXOS8700CQ_CTRL_REG1,24);
+   SerialUSB.print("Control Register : ");
+   spi_read_cmd(FXOS8700CQ_CTRL_REG1);
+   //spi_write_cmd(FXOS8700CQ_M_CTRL_REG1,181);
+   //SerialUSB.println(spi_read_cmd(FXOS8700CQ_M_CTRL_REG1));
+   //spi_write_cmd(FXOS8700CQ_CTRL_REG1,25);
+   //SerialUSB.print("Control Register : ");
+   //SerialUSB.println(spi_read_cmd(FXOS8700CQ_CTRL_REG1));
+   SerialUSB.println(" ");
 
 }
 
