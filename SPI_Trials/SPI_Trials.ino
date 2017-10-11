@@ -24,11 +24,11 @@ void setup() {
 }
 
 void loop() {
-  delay(1000);
+  delay(50);
   //sensor.checkWhoAmI();
-  sensor.init();
-  //sensor.readMagData();
-  //delay(500);
+  //sensor.init();
+  sensor.readMagData();
+  //delay(50);
   //sensor.standby();
   //sensor.init();
   

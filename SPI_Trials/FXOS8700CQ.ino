@@ -42,28 +42,47 @@ void FXOS8700CQ::readMagData() {
     uint8_t mag_l;
     uint8_t mag_h;
     uint16_t mag_val;
+    float mag_val2;
     
     mag_l = spi_read_cmd(FXOS8700CQ_M_OUT_X_LSB);
     mag_h = spi_read_cmd(FXOS8700CQ_M_OUT_X_MSB);
-    mag_val = mag_l|(mag_h<<8);
+    mag_val = (mag_h*256 )+mag_l;
+    if(mag_val>32768)
+    {
+      mag_val= ~(mag_val)+1;
+    }
+    mag_val2 = float(mag_val*0.1);
     SerialUSB.print("X : ");
-    SerialUSB.println(mag_val);
-
+    SerialUSB.print(mag_val2);
+    SerialUSB.print("   ");
+    
     mag_l = spi_read_cmd(FXOS8700CQ_M_OUT_Y_LSB);
     mag_h = spi_read_cmd(FXOS8700CQ_M_OUT_Y_MSB);
-    mag_val = mag_l|(mag_h<<8);
+    mag_val = (mag_h*256)+mag_l;
+    if(mag_val>32768)
+    {
+      mag_val= ~(mag_val)+1;
+    }
+    mag_val2 = float(mag_val*0.1);
     SerialUSB.print("Y : ");
-    SerialUSB.println(mag_val);
-
+    SerialUSB.print(mag_val2);
+    SerialUSB.print("   ");
+    
     mag_l = spi_read_cmd(FXOS8700CQ_M_OUT_Z_LSB);
     mag_h = spi_read_cmd(FXOS8700CQ_M_OUT_Z_MSB);
-    mag_val = mag_l|(mag_h<<8);
+    mag_val = (mag_h*256)+mag_l;
+    if(mag_val>32768)
+    {
+      mag_val= ~(mag_val)+1;
+    }
+    mag_val2 = float(mag_val*0.1);
     SerialUSB.print("Z is : ");
-    SerialUSB.println(mag_val);
+    SerialUSB.println(mag_val2);
+    
 
     mag_l = spi_read_cmd(FXOS8700CQ_M_DR_STATUS);
-    SerialUSB.println(mag_l);
-    SerialUSB.println(" ");
+    //SerialUSB.println(mag_l);
+    //SerialUSB.println(" ");
        
 }
 
@@ -97,13 +116,11 @@ void FXOS8700CQ::active() {
 void FXOS8700CQ::init() {
    SerialUSB.println("Init Function : ");
    spi_write_cmd(FXOS8700CQ_CTRL_REG1,24);
-   SerialUSB.print("Control Register : ");
    spi_read_cmd(FXOS8700CQ_CTRL_REG1);
-   //spi_write_cmd(FXOS8700CQ_M_CTRL_REG1,181);
-   //SerialUSB.println(spi_read_cmd(FXOS8700CQ_M_CTRL_REG1));
-   //spi_write_cmd(FXOS8700CQ_CTRL_REG1,25);
-   //SerialUSB.print("Control Register : ");
-   //SerialUSB.println(spi_read_cmd(FXOS8700CQ_CTRL_REG1));
+   spi_write_cmd(FXOS8700CQ_M_CTRL_REG1,0x15);
+   spi_read_cmd(FXOS8700CQ_M_CTRL_REG1);
+   spi_write_cmd(FXOS8700CQ_CTRL_REG1,25);
+   spi_read_cmd(FXOS8700CQ_CTRL_REG1);
    SerialUSB.println(" ");
 
 }
