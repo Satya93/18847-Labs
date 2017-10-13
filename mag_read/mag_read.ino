@@ -7,7 +7,7 @@
 #include "SparkFunIMU.h"
 #include "SparkFunLSM303C.h"
 #include "LSM303CTypes.h"
-
+int i;
 
 LSM303C myIMU;
 
@@ -20,13 +20,21 @@ SemaphoreHandle_t sem,sem2;
 // Declare the thread function for thread 1.
 static void Thread1(void* arg) {
   while (1) {
-
-    // Wait for signal from thread 2.
     xSemaphoreTake(sem, portMAX_DELAY);
-    //SerialUSB.println("Thread 1");
-  
-    // Turn LED off.
+    i = 0;
     pd_rgb_led(PD_OFF);
+    // Wait for signal from thread 2.
+    while(i<10000)
+    {
+    myIMU.WhoAmI();
+    i++;
+    }
+    SerialUSB.println("Thread 1");
+    
+
+    
+    // Turn LED off.
+    
     xSemaphoreGive(sem2);
   }
 }
@@ -60,7 +68,9 @@ static void Thread2(void* arg) {
 void setup() {
   portBASE_TYPE s1, s2;
 
-  SerialUSB.begin(40000000);
+  //SerialUSB.begin(40000000);
+  //while(!(SerialUSB));
+  //SerialUSB.println("Begin Code");
 
   if (myIMU.begin(
                 ///// Interface mode options

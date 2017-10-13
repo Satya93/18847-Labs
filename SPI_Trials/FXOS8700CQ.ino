@@ -52,9 +52,9 @@ void FXOS8700CQ::readMagData() {
       mag_val= ~(mag_val)+1;
     }
     mag_val2 = float(mag_val*0.1);
-    SerialUSB.print("X : ");
-    SerialUSB.print(mag_val2);
-    SerialUSB.print("   ");
+    //SerialUSB.print("X : ");
+    //SerialUSB.print(mag_val2);
+    //SerialUSB.print("   ");
     
     mag_l = spi_read_cmd(FXOS8700CQ_M_OUT_Y_LSB);
     mag_h = spi_read_cmd(FXOS8700CQ_M_OUT_Y_MSB);
@@ -64,9 +64,9 @@ void FXOS8700CQ::readMagData() {
       mag_val= ~(mag_val)+1;
     }
     mag_val2 = float(mag_val*0.1);
-    SerialUSB.print("Y : ");
-    SerialUSB.print(mag_val2);
-    SerialUSB.print("   ");
+    //SerialUSB.print("Y : ");
+    //SerialUSB.print(mag_val2);
+    //SerialUSB.print("   ");
     
     mag_l = spi_read_cmd(FXOS8700CQ_M_OUT_Z_LSB);
     mag_h = spi_read_cmd(FXOS8700CQ_M_OUT_Z_MSB);
@@ -76,8 +76,8 @@ void FXOS8700CQ::readMagData() {
       mag_val= ~(mag_val)+1;
     }
     mag_val2 = float(mag_val*0.1);
-    SerialUSB.print("Z is : ");
-    SerialUSB.println(mag_val2);
+    //SerialUSB.print("Z is : ");
+    //SerialUSB.println(mag_val2);
     
 
     mag_l = spi_read_cmd(FXOS8700CQ_M_DR_STATUS);
