@@ -22,7 +22,7 @@ static void Thread1(void* arg) {
   while (1) {
     xSemaphoreTake(sem, portMAX_DELAY);
     i = 0;
-    pd_rgb_led(PD_OFF);
+    pd_rgb_led(PD_WHITE);
     // Wait for signal from thread 2.
     while(i<10000)
     {
@@ -51,7 +51,7 @@ static void Thread2(void* arg) {
   while (1) {
     xSemaphoreTake(sem2, portMAX_DELAY);
     // Turn RED LED On.
-    pd_rgb_led(PD_RED);
+    pd_rgb_led(PD_OFF);
     //SerialUSB.println("Thread 2");
     //SerialUSB.println(" ");
     // Sleep for 200 milliseconds.

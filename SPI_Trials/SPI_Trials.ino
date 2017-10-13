@@ -33,7 +33,7 @@ void loop() {
   {
   //sensor.checkWhoAmI();
   //sensor.init();
-  sensor.readMagData();
+  sensor.readReg(FXOS8700CQ_WHO_AM_I);
   i++;
   }
 
