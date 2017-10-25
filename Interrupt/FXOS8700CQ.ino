@@ -146,52 +146,29 @@ void FXOS8700CQ::checkWhoAmI(void) {
 }
 
 void FXOS8700CQ::enableInt() {
-  int latch_reg;
-  SerialUSB.println("Enabling Interrupts...");
   spi_write_cmd(FXOS8700CQ_M_THS_X_MSB, 0b00100000);
   spi_write_cmd(FXOS8700CQ_M_THS_X_LSB, 0b00000000);
   spi_write_cmd(FXOS8700CQ_M_THS_Y_MSB, 0b00100000);
   spi_write_cmd(FXOS8700CQ_M_THS_Y_LSB, 0b00000000);
   spi_write_cmd(FXOS8700CQ_M_THS_Z_MSB, 0b01111101);
   spi_write_cmd(FXOS8700CQ_M_THS_Z_LSB, 0b00000000);
-  spi_write_cmd(FXOS8700CQ_M_THS_CFG, 0x13);
-  SerialUSB.println("Enabled Interrupts!");
-  SerialUSB.println(" ");
-}
-
-void FXOS8700CQ::clearLatch() {
-  int latch_reg;
-  latch_reg = spi_read_cmd(FXOS8700CQ_M_THS_SRC);
-  SerialUSB.println(latch_reg);
-  SerialUSB.println("Clearing Latch...");
-  spi_read_cmd(FXOS8700CQ_M_THS_SRC);
-  SerialUSB.println("Cleared Latch!");
-  latch_reg = spi_read_cmd(FXOS8700CQ_M_THS_SRC);
-  SerialUSB.println(latch_reg);
-  SerialUSB.println(" ");
+  spi_write_cmd(FXOS8700CQ_M_THS_CFG, 0x63);
 }
 
 void FXOS8700CQ::disableInt() {
-  int latch_reg;
-  SerialUSB.println("Disabling Interrupts...");
-  spi_write_cmd(FXOS8700CQ_M_THS_CFG, 0x00);
-  SerialUSB.println("Disabled Interrupts!");
-  SerialUSB.println(" ");
+  spi_write_cmd(FXOS8700CQ_M_THS_CFG, 0x60);
 }
 
 void FXOS8700CQ::calibrate() {
-  SerialUSB.println("Calibrating Sensor...");
   spi_write_cmd(FXOS8700CQ_M_CTRL_REG3, 0x00);
   spi_write_cmd(FXOS8700CQ_M_OFF_X_MSB, 0b11101011);
   spi_write_cmd(FXOS8700CQ_M_OFF_X_LSB, 0b00101100);
   spi_write_cmd(FXOS8700CQ_M_OFF_Y_MSB, 0b11111000);
   spi_write_cmd(FXOS8700CQ_M_OFF_Y_LSB, 0b00110000);
-  spi_write_cmd(FXOS8700CQ_M_OFF_Z_MSB, 0b11110111);
-  spi_write_cmd(FXOS8700CQ_M_OFF_Z_LSB, 0b00000100);
+  //spi_write_cmd(FXOS8700CQ_M_OFF_Z_MSB, 0b11110111);
+  //spi_write_cmd(FXOS8700CQ_M_OFF_Z_LSB, 0b00000100);
   spi_write_cmd(FXOS8700CQ_M_OFF_Z_MSB, 0x00);
   spi_write_cmd(FXOS8700CQ_M_OFF_Z_MSB, 0x00);
-  SerialUSB.println("Calibration done!");
-  SerialUSB.println(" ");
 }
 
 //*****************************************************************************

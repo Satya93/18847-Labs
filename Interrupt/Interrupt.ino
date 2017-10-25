@@ -11,12 +11,17 @@ int interruptPin = 51;
 void setup() {
   // Initialize SerialUSB 
   SerialUSB.begin(9600);
-  while(!SerialUSB);
+  //while(!SerialUSB);
 
-  pd_rgb_led_init();
+  // 
+  
+  //Attach Pin 51 to interrupt
+  pinMode(interruptPin, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(interruptPin), collect_data, CHANGE);
   
   // Initialize SPI
   SPI.begin();
+  pd_rgb_led_init();
 
   // Initialize sensor
   sensor = FXOS8700CQ();
@@ -28,32 +33,24 @@ void setup() {
   //Check Who Am I value
   //value = sensor.readReg(FXOS8700CQ_WHO_AM_I);
   
-  //Attach Pin 51 to interrupt
-  //pinMode(interruptPin, INPUT);
-  attachInterrupt(interruptPin, collect_data, RISING);
-  
   delay(500);
 }
 
 void collect_data(){
-  detachInterrupt(interruptPin);
-  //sensor.disableInt();
+  sensor.disableInt();
   SerialUSB.println("Interrupt!");
-  sensor.readMagData();
+  //sensor.readMagData();
   process_data();
-  //sensor.clearLatch();
-  //sensor.enableInt();
-  attachInterrupt(interruptPin, collect_data, FALLING);
+  sensor.enableInt();
 }
 
 void process_data(){
   count++;
-  SerialUSB.print("Interrupt Count is : ");
   SerialUSB.println(count);
 }
 
 void loop() {
-  //sensor.readMagData();
-  //delay(200);
+  sensor.readMagData();
+  delay(200);
 }
 

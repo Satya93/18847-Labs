@@ -203,7 +203,6 @@ class FXOS8700CQ {
         void enableInt(void);     // Enable Interrupts
         void disableInt(void);     // Disable Interrupts
         void calibrate(void);     // Calibrate Magnetometer
-        void clearLatch(void);    //Clear Interrupt latch
 };
 
 #endif
