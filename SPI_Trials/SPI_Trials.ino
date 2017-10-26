@@ -7,6 +7,7 @@ uint8_t value;
 uint8_t count;
 int chip_select = 4;
 int interruptPin = 51;
+boolean flag = LOW;
 
 void setup() {
   // Initialize SerialUSB 
@@ -20,29 +21,25 @@ void setup() {
 
   // Initialize sensor
   sensor = FXOS8700CQ();
-  sensor.init();
   sensor.calibrate();
+  sensor.init();
+  sensor.standby();
   sensor.enableInt();
+  sensor.active();
   //sensor.disableInt();
 
   //Check Who Am I value
   //value = sensor.readReg(FXOS8700CQ_WHO_AM_I);
   
   //Attach Pin 51 to interrupt
-  //pinMode(interruptPin, INPUT);
-  attachInterrupt(interruptPin, collect_data, RISING);
+  attachInterrupt(interruptPin, collect_data, FALLING);
   
   delay(500);
 }
 
 void collect_data(){
   detachInterrupt(interruptPin);
-  //sensor.disableInt();
-  SerialUSB.println("Interrupt!");
-  sensor.readMagData();
-  process_data();
-  //sensor.clearLatch();
-  //sensor.enableInt();
+  flag = HIGH;
   attachInterrupt(interruptPin, collect_data, FALLING);
 }
 
@@ -53,7 +50,14 @@ void process_data(){
 }
 
 void loop() {
-  //sensor.readMagData();
-  //delay(200);
+  sensor.readMagData();
+  delay(200);
+  if(flag==HIGH){
+    SerialUSB.println("Interrupt!");
+    //sensor.readMagData();
+    process_data();
+    sensor.clearLatch();
+    flag=LOW;
+  }
 }
 

@@ -44,6 +44,7 @@ void FXOS8700CQ::readMagData() {
     uint16_t mag_val;
     uint16_t raw_val;
     float mag_val2;
+    int latch_reg;
     
     mag_l = spi_read_cmd(FXOS8700CQ_M_OUT_X_LSB);
     mag_h = spi_read_cmd(FXOS8700CQ_M_OUT_X_MSB);
@@ -86,8 +87,11 @@ void FXOS8700CQ::readMagData() {
     SerialUSB.println(raw_val);
     //SerialUSB.println(mag_val2);
     
-
-    mag_l = spi_read_cmd(FXOS8700CQ_M_DR_STATUS);
+    //latch_reg = spi_read_cmd(FXOS8700CQ_M_INT_SRC);
+    //SerialUSB.println(latch_reg);
+    //latch_reg = spi_read_cmd(FXOS8700CQ_M_THS_SRC);
+    //latch_reg = spi_read_cmd(FXOS8700CQ_M_INT_SRC);
+    //SerialUSB.println(latch_reg);
     //SerialUSB.println(mag_l);
     //SerialUSB.println(" ");
        
@@ -123,7 +127,7 @@ void FXOS8700CQ::active() {
 void FXOS8700CQ::init() {
    SerialUSB.println("Init Function : ");
    spi_write_cmd(FXOS8700CQ_CTRL_REG1,24);
-   spi_write_cmd(FXOS8700CQ_M_CTRL_REG1,0x15);
+   spi_write_cmd(FXOS8700CQ_M_CTRL_REG1,0x1D);
    spi_write_cmd(FXOS8700CQ_CTRL_REG1,25);
    SerialUSB.println(" ");
 
@@ -146,27 +150,31 @@ void FXOS8700CQ::checkWhoAmI(void) {
 }
 
 void FXOS8700CQ::enableInt() {
-  int latch_reg;
   SerialUSB.println("Enabling Interrupts...");
-  spi_write_cmd(FXOS8700CQ_M_THS_X_MSB, 0b00100000);
-  spi_write_cmd(FXOS8700CQ_M_THS_X_LSB, 0b00000000);
-  spi_write_cmd(FXOS8700CQ_M_THS_Y_MSB, 0b00100000);
-  spi_write_cmd(FXOS8700CQ_M_THS_Y_LSB, 0b00000000);
-  spi_write_cmd(FXOS8700CQ_M_THS_Z_MSB, 0b01111101);
+  spi_write_cmd(FXOS8700CQ_M_THS_X_MSB, 0b00000000);
+  spi_write_cmd(FXOS8700CQ_M_THS_X_LSB, 0b10000000);
+  spi_write_cmd(FXOS8700CQ_M_THS_Y_MSB, 0b10111111);
+  spi_write_cmd(FXOS8700CQ_M_THS_Y_LSB, 0b11000110);
+  spi_write_cmd(FXOS8700CQ_M_THS_Z_MSB, 0b11111101);
   spi_write_cmd(FXOS8700CQ_M_THS_Z_LSB, 0b00000000);
-  spi_write_cmd(FXOS8700CQ_M_THS_CFG, 0x13);
+  spi_write_cmd(FXOS8700CQ_M_THS_CFG, 0b11001011);
+  spi_write_cmd(FXOS8700CQ_M_THS_COUNT, 0x0A);
+  spi_write_cmd(FXOS8700CQ_M_CTRL_REG3, 0x00);
   SerialUSB.println("Enabled Interrupts!");
   SerialUSB.println(" ");
 }
 
 void FXOS8700CQ::clearLatch() {
   int latch_reg;
-  latch_reg = spi_read_cmd(FXOS8700CQ_M_THS_SRC);
+  SerialUSB.println(" ");
+  latch_reg = spi_read_cmd(FXOS8700CQ_M_INT_SRC);
+  SerialUSB.print("Interrupt Register Status : ");
   SerialUSB.println(latch_reg);
   SerialUSB.println("Clearing Latch...");
   spi_read_cmd(FXOS8700CQ_M_THS_SRC);
   SerialUSB.println("Cleared Latch!");
-  latch_reg = spi_read_cmd(FXOS8700CQ_M_THS_SRC);
+  latch_reg = spi_read_cmd(FXOS8700CQ_M_INT_SRC);
+  SerialUSB.print("Interrupt Register Status : ");
   SerialUSB.println(latch_reg);
   SerialUSB.println(" ");
 }
@@ -182,14 +190,19 @@ void FXOS8700CQ::disableInt() {
 void FXOS8700CQ::calibrate() {
   SerialUSB.println("Calibrating Sensor...");
   spi_write_cmd(FXOS8700CQ_M_CTRL_REG3, 0x00);
-  spi_write_cmd(FXOS8700CQ_M_OFF_X_MSB, 0b11101011);
-  spi_write_cmd(FXOS8700CQ_M_OFF_X_LSB, 0b00101100);
-  spi_write_cmd(FXOS8700CQ_M_OFF_Y_MSB, 0b11111000);
-  spi_write_cmd(FXOS8700CQ_M_OFF_Y_LSB, 0b00110000);
+  spi_write_cmd(FXOS8700CQ_M_OFF_X_MSB, 0x00);
+  spi_write_cmd(FXOS8700CQ_M_OFF_X_LSB, 0x00);
+  spi_write_cmd(FXOS8700CQ_MIN_X_MSB, 0b11111111);
+  spi_write_cmd(FXOS8700CQ_MIN_X_LSB, 0b10011100);
+  spi_write_cmd(FXOS8700CQ_MAX_X_MSB, 0b00000000);
+  spi_write_cmd(FXOS8700CQ_MAX_X_LSB, 0x01100100);
+  //spi_write_cmd(FXOS8700CQ_M_OFF_Y_MSB, 0b11111000);
+  //spi_write_cmd(FXOS8700CQ_M_OFF_Y_LSB, 0b00110000);
+  spi_write_cmd(FXOS8700CQ_M_OFF_Y_LSB, 0b00000000);
+  spi_write_cmd(FXOS8700CQ_M_OFF_Y_MSB, 0b00000000);
   spi_write_cmd(FXOS8700CQ_M_OFF_Z_MSB, 0b11110111);
   spi_write_cmd(FXOS8700CQ_M_OFF_Z_LSB, 0b00000100);
-  spi_write_cmd(FXOS8700CQ_M_OFF_Z_MSB, 0x00);
-  spi_write_cmd(FXOS8700CQ_M_OFF_Z_MSB, 0x00);
+  spi_write_cmd(FXOS8700CQ_M_CTRL_REG3, 0x88);
   SerialUSB.println("Calibration done!");
   SerialUSB.println(" ");
 }
