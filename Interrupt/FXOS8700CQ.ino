@@ -161,6 +161,30 @@ void FXOS8700CQ::disableInt() {
 
 void FXOS8700CQ::calibrate() {
   SerialUSB.println("Calibrating...");
+  SerialUSB.println("Calibration Begin");
+  int max_cnt  = 100;
+  int curr_reading;
+  long tot_reading = 0;
+  long v_reading = 0;
+  int mean;
+  int variance;
+  int i = max_cnt;
+  while(i>0){
+    curr_reading = sensor.readMagData();
+    tot_reading = tot_reading + curr_reading;
+    v_reading = v_reading + (curr_reading*curr_reading);
+    i--;
+  }
+  mean = tot_reading/max_cnt;
+  SerialUSB.println("Calibration Done");
+  SerialUSB.print("Mean : ");
+  SerialUSB.println(mean);
+  SerialUSB.print("Variance : ");
+  v_reading = v_reading/max_cnt;
+  variance = (v_reading - (mean*mean));
+  variance = sqrt(variance);
+  SerialUSB.println(variance);
+  SerialUSB.println( );
 }
 
 void FXOS8700CQ::reset() {

@@ -34,8 +34,7 @@ void setup() {
   value = sensor.readReg(FXOS8700CQ_WHO_AM_I);
   SerialUSB.println(value);
   sensor.active();
-  //sensor.calibrate();
-  
+  sensor.calibrate();
 }
 
 void collect_data(){

@@ -43,7 +43,7 @@ uint8_t spi_read_cmd(uint8_t address) {
     rx_data = SPI.transfer(0x00); //Byte2
     SPI.endTransaction();
     digitalWrite(CS_PIN, HIGH);
-    delay(200);
+    delay(20);
     return rx_data;
 }
 
