@@ -28,25 +28,25 @@ void FXOS8700CQ::writeReg(uint8_t reg, uint8_t data) {
 // readReg(): Reads from a register
 //------------------------------------------------------------------------------
 uint8_t FXOS8700CQ::readReg(uint8_t reg) {
+    
     uint8_t rx_data;
-    
     rx_data = spi_read_cmd(reg);
-    
     return(rx_data);
 }
 
 //------------------------------------------------------------------------------
 // readMagData(): Read the magnometer X, Y and Z axisdata
 //------------------------------------------------------------------------------
-void FXOS8700CQ::readMagData() {
+int FXOS8700CQ::readMagData() {
     uint8_t mag_l;
     uint8_t mag_h;
     uint16_t mag_val;
     uint16_t raw_val;
     float mag_val2;
     
-    mag_l = spi_read_cmd(FXOS8700CQ_M_OUT_X_LSB);
-    mag_h = spi_read_cmd(FXOS8700CQ_M_OUT_X_MSB);
+    
+    mag_l = readReg(FXOS8700CQ_M_OUT_X_LSB);
+    mag_h = readReg(FXOS8700CQ_M_OUT_X_MSB);
     raw_val = (mag_h*256 )+mag_l;
     mag_val = (mag_h*256 )+mag_l;
     if(mag_val>32768)
@@ -54,13 +54,13 @@ void FXOS8700CQ::readMagData() {
       mag_val= ~(mag_val)+1;
     }
     mag_val2 = float(mag_val*0.1);
-    SerialUSB.print("X : ");
-    SerialUSB.print(raw_val);
+    //SerialUSB.print("X : ");
+    //SerialUSB.print(raw_val);
     //SerialUSB.print(mag_val2);
-    SerialUSB.print("   ");
-    
-    mag_l = spi_read_cmd(FXOS8700CQ_M_OUT_Y_LSB);
-    mag_h = spi_read_cmd(FXOS8700CQ_M_OUT_Y_MSB);
+    //SerialUSB.print("   ");
+
+    mag_l = readReg(FXOS8700CQ_M_OUT_Y_LSB);
+    mag_h = readReg(FXOS8700CQ_M_OUT_Y_MSB);
     raw_val = (mag_h*256 )+mag_l;
     mag_val = (mag_h*256)+mag_l;
     if(mag_val>32768)
@@ -68,13 +68,13 @@ void FXOS8700CQ::readMagData() {
       mag_val= ~(mag_val)+1;
     }
     mag_val2 = float(mag_val*0.1);
-    SerialUSB.print("Y : ");
-    SerialUSB.print(raw_val);
+    //SerialUSB.print("Y : ");
+    //SerialUSB.print(raw_val);
     //SerialUSB.print(mag_val2);
-    SerialUSB.print("   ");
-    
-    mag_l = spi_read_cmd(FXOS8700CQ_M_OUT_Z_LSB);
-    mag_h = spi_read_cmd(FXOS8700CQ_M_OUT_Z_MSB);
+    //SerialUSB.print("   ");
+
+    mag_l = readReg(FXOS8700CQ_M_OUT_Z_LSB);
+    mag_h = readReg(FXOS8700CQ_M_OUT_Z_MSB);
     raw_val = (mag_h*256 )+mag_l;
     mag_val = (mag_h*256)+mag_l;
     if(mag_val>32768)
@@ -82,15 +82,15 @@ void FXOS8700CQ::readMagData() {
       mag_val= ~(mag_val)+1;
     }
     mag_val2 = float(mag_val*0.1);
-    SerialUSB.print("Z is : ");
+    //SerialUSB.print("Z is : ");
     SerialUSB.println(raw_val);
     //SerialUSB.println(mag_val2);
-    
 
-    mag_l = spi_read_cmd(FXOS8700CQ_M_DR_STATUS);
+    //mag_l = spi_read_cmd(FXOS8700CQ_M_DR_STATUS);
     //SerialUSB.println(mag_l);
     //SerialUSB.println(" ");
-       
+    return raw_val;
+    
 }
 
 //------------------------------------------------------------------------------
@@ -98,7 +98,6 @@ void FXOS8700CQ::readMagData() {
 //------------------------------------------------------------------------------
 void FXOS8700CQ::standby() {
    //Chip select high and initialize transaction
-
    spi_write_cmd(FXOS8700CQ_CTRL_REG1,0x18);
    //Chip select disable and end transaction
 
@@ -126,6 +125,7 @@ void FXOS8700CQ::init() {
    spi_write_cmd(FXOS8700CQ_M_CTRL_REG1,0x15);
    spi_write_cmd(FXOS8700CQ_CTRL_REG1,25);
    SerialUSB.println(" ");
+   
 
 }
 
@@ -142,15 +142,15 @@ void FXOS8700CQ::checkWhoAmI(void) {
     else
     {
       SerialUSB.println("Device Authentication Passed");
-    }
+    };
 }
 
 void FXOS8700CQ::enableInt() {
-  spi_write_cmd(FXOS8700CQ_M_THS_X_MSB, 0b00100000);
+  spi_write_cmd(FXOS8700CQ_M_THS_X_MSB, 0b00000000);
   spi_write_cmd(FXOS8700CQ_M_THS_X_LSB, 0b00000000);
-  spi_write_cmd(FXOS8700CQ_M_THS_Y_MSB, 0b00100000);
+  spi_write_cmd(FXOS8700CQ_M_THS_Y_MSB, 0b00000000);
   spi_write_cmd(FXOS8700CQ_M_THS_Y_LSB, 0b00000000);
-  spi_write_cmd(FXOS8700CQ_M_THS_Z_MSB, 0b01111101);
+  spi_write_cmd(FXOS8700CQ_M_THS_Z_MSB, 0b00000000);
   spi_write_cmd(FXOS8700CQ_M_THS_Z_LSB, 0b00000000);
   spi_write_cmd(FXOS8700CQ_M_THS_CFG, 0x63);
 }
@@ -160,16 +160,11 @@ void FXOS8700CQ::disableInt() {
 }
 
 void FXOS8700CQ::calibrate() {
-  spi_write_cmd(FXOS8700CQ_M_CTRL_REG3, 0x00);
-  spi_write_cmd(FXOS8700CQ_M_OFF_X_MSB, 0b11101011);
-  spi_write_cmd(FXOS8700CQ_M_OFF_X_LSB, 0b00101100);
-  spi_write_cmd(FXOS8700CQ_M_OFF_Y_MSB, 0b11111000);
-  spi_write_cmd(FXOS8700CQ_M_OFF_Y_LSB, 0b00110000);
-  //spi_write_cmd(FXOS8700CQ_M_OFF_Z_MSB, 0b11110111);
-  //spi_write_cmd(FXOS8700CQ_M_OFF_Z_LSB, 0b00000100);
-  spi_write_cmd(FXOS8700CQ_M_OFF_Z_MSB, 0x00);
-  spi_write_cmd(FXOS8700CQ_M_OFF_Z_MSB, 0x00);
+  SerialUSB.println("Calibrating...");
 }
 
+void FXOS8700CQ::reset() {
+  spi_write_cmd(FXOS8700CQ_CTRL_REG2, 0x44);
+}
 //*****************************************************************************
 

@@ -15,7 +15,7 @@
 #define FXOS8700CQ_WHOAMI_VAL 0xC7
 
 // Chip Select Pin for SPI
-#define CS_PIN 51
+#define CS_PIN 4
 
 //------------------------------------------------------------------------------
 // Register Addresses
@@ -196,13 +196,14 @@ class FXOS8700CQ {
         void active(void);        // Put FXOS8700CQ in active mode
 
         // Read sensor data
-        void readMagData(void);   // Read the magnetometer data
+        int readMagData(void);   // Read the magnetometer data
 
         // Miscellaneous Functions
         void checkWhoAmI(void);   // Read the Who Am I register
         void enableInt(void);     // Enable Interrupts
         void disableInt(void);     // Disable Interrupts
         void calibrate(void);     // Calibrate Magnetometer
+        void reset(void);         // Reset Magnetometer
 };
 
 #endif

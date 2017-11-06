@@ -14,6 +14,7 @@ FXOS8700CQ::FXOS8700CQ() {
 
     pinMode(CS_PIN, OUTPUT);        // Select the GPIO Pin 51 as SPI Chip Select
     digitalWrite(CS_PIN, HIGH);     // Set Pin to high (Active Low)
+    SerialUSB.println(spi_read_cmd(FXOS8700CQ_CTRL_REG1));
 }
 
 //------------------------------------------------------------------------------
@@ -127,7 +128,8 @@ void FXOS8700CQ::active() {
 void FXOS8700CQ::init() {
    SerialUSB.println("Init Function : ");
    spi_write_cmd(FXOS8700CQ_CTRL_REG1,24);
-   spi_write_cmd(FXOS8700CQ_M_CTRL_REG1,0x1D);
+   SerialUSB.println(spi_read_cmd(FXOS8700CQ_CTRL_REG1));
+   spi_write_cmd(FXOS8700CQ_M_CTRL_REG1,0x15);
    spi_write_cmd(FXOS8700CQ_CTRL_REG1,25);
    SerialUSB.println(" ");
 
@@ -140,6 +142,7 @@ void FXOS8700CQ::checkWhoAmI(void) {
     //Compare Values
     if(FXOS8700CQ_WHOAMI_VAL != spi_read_cmd(FXOS8700CQ_WHO_AM_I))
     {
+      SerialUSB.println(spi_read_cmd(FXOS8700CQ_WHO_AM_I));
       SerialUSB.println("Device Authentication Failed");
       while(1);
     }
