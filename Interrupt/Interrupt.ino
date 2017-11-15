@@ -15,8 +15,6 @@ void setup() {
   // 
   
   //Attach Pin 51 to interrupt
-  //pinMode(interruptPin, INPUT_PULLUP);
-  //attachInterrupt(digitalPinToInterrupt(interruptPin), collect_data, CHANGE);
   
   // Initialize SPI
   SPI.begin();
@@ -35,19 +33,32 @@ void setup() {
   SerialUSB.println(value);
   sensor.active();
   sensor.calibrate();
+  sensor.enableInt();
+  interrupts();
+  pinMode(interruptPin, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(interruptPin), collect_data, FALLING);
 }
 
 void collect_data(){
-  sensor.disableInt();
-  SerialUSB.println("Interrupt!");
+  noInterrupts();
+  //sensor.disableInt();
+  detachInterrupt(interruptPin);
   process_data();
-  attachInterrupt(digitalPinToInterrupt(interruptPin), collect_data, CHANGE);
-  sensor.enableInt();
+  attachInterrupt(digitalPinToInterrupt(interruptPin), collect_data, FALLING);
+  //sensor.enableInt();
+  interrupts();
 }
 
 void process_data(){
   count++;
+  SerialUSB.println("Interrupt Event!");
+  //delay(20);
+  //sensor.init();
+  //sensor.active();
+  //SerialUSB.println(sensor.readMagData());
+  SerialUSB.print("Count : ");
   SerialUSB.println(count);
+  SerialUSB.println( );
 }
 
 void loop() {

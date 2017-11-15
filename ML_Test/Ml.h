@@ -14,7 +14,7 @@ class Ml
     float minimum();
     float maximum();
     float std_dev();
-    void regression();
+    void regression(int);
     void sample(int);
     int get_data();
 
@@ -28,6 +28,7 @@ class Ml
     float _mean;
     float _del;
     float _stddev;
+    float _variance;
     float _err;
     int _mx_cnt;
     int _pin = 4;

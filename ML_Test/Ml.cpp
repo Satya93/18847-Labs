@@ -88,15 +88,14 @@ int Ml::get_data()
   return randi;
 }
 
-void Ml::regression()
+void Ml::regression(int numiter)
 {
-  SerialUSB.print("Mean : ");
-  SerialUSB.println(_mean);
+ 
   float err = 1000; 
   float m = 2;
   float c = _mean;
   float calc_val;
-  float alpha = 0.00055;
+  float alpha = 0.005;
   float err_1;
   float err_0;
   float toterr_0;
@@ -105,49 +104,39 @@ void Ml::regression()
   int i = 0;
   float olderr;
   float tot_cost = 10000;
+  int itno = 0;
+  int boost = 1;
+  int maxcnt = numiter;
+  //SerialUSB.println("Regression");
+  //while(tot_cost>4){
   
-  SerialUSB.println("Regression");
-  while(tot_cost>4){
+  while(itno<maxcnt){
+    // Reset Aggregation variables
     olderr = tot_cost;
     cost = 0;
     i = 0;
     toterr_1 = 0;
     toterr_0 = 0;
+    // Begin iteration
     while(i<_mx_cnt){
+      // Get Initial Estimate
       calc_val = m*(i+1) + c;
+      // Calculate Cost and First Derivatives of Slope and Error
       cost = ((calc_val-buff[i])*(calc_val-buff[i]));
       err_0 = (calc_val-buff[i]);
-      err_1 = err_0*i;
+      err_1 = (calc_val-buff[i])*(i - _min)/(_max-_min);
+      // Aggregate Errors
       toterr_0 += err_0;
       toterr_1 += err_1;
       tot_cost += cost;
       i++;
     }
+    // Calculate Iteration Cost
     tot_cost = tot_cost/(2*i);
-    if(olderr==tot_cost){
-      SerialUSB.print("Old Error is : ");
-      SerialUSB.println(olderr);
-      SerialUSB.print("New Error is : ");
-      SerialUSB.println(tot_cost);
-      i = 0;
-      while(i<_mx_cnt){
-      SerialUSB.print("Original Value : ");
-      SerialUSB.print(buff[i]);
-      SerialUSB.print(" Derived Value : ");
-      SerialUSB.println(m*(i+1)+c);
-      i++;
-      }
-      break;
-    }
-    int boost = 1; 
-    SerialUSB.print("For Slope : ");
-    SerialUSB.print(m);
-    SerialUSB.print(" and Intercept : ");
-    SerialUSB.print(c);
-    SerialUSB.print(", Error is : ");
-    SerialUSB.println(tot_cost);
-    m = m - (alpha*boost*toterr_1/_mx_cnt);
-    c = c - (alpha*boost*toterr_0/_mx_cnt);
-    delay(10);
+    // Update Slope and Intercept
+    m = m - (alpha*toterr_1/_mx_cnt);
+    c = c - (alpha*toterr_0/_mx_cnt);
+    itno++;
   }
+
 }
